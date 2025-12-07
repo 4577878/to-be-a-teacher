@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>福州大学至诚学院学生开课选课系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Microsoft Yahei', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+        .notice-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .notice-card:hover {
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.1);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background-color: #6d28d9;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #5b21b6;
+        }
+        .btn-secondary {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #7c3aed;
+        }
+        .btn-accent {
+            background-color: #ec4899;
+            color: white;
+        }
+        .btn-accent:hover {
+            background-color: #db2777;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+        .form-check {
+            margin-bottom: 0.5rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f7fa;
+            color: #4b5563;
+        }
+        .rank-1 {
+            color: #ffb400;
+        }
+        .rank-2 {
+            color: #c0c6cc;
+        }
+        .rank-3 {
+            color: #d47f55;
+        }
+        /* 文件上传样式 */
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .upload-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #f5f7fa;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-btn:hover {
+            background-color: #e6e6e6;
+            border-color: #8b5cf6;
+        }
+        .file-list {
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            min-height: 60px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-name {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .file-size {
+            margin: 0 1rem;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        .file-remove {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .file-remove:hover {
+            color: #dc2626;
+        }
+        .upload-preview {
+            margin-top: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .preview-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* 加载提示样式 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .tag-default {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border-color: #e5e7eb;
+        }
+        .tag-selected {
+            background-color: #8b5cf6;
+            color: white;
+            border-color: #7c3aed;
+        }
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        /* 选择页按钮动画 */
+        .choice-btn {
+            display: block;
+            width: 100%;
+            padding: 1.25rem 1rem;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .choice-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        .choice-btn:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .choice-btn:hover:before {
+            left: 100%;
+        }
+        /* 按钮颜色调整 */
+        .teacher-btn {
+            background-color: #60a5fa; /* 浅蓝色 */
+        }
+        .student-btn {
+            background-color: #ec4899; /* 粉红色 */
+        }
+        .announcement-tag {
+            background-color: #6d28d9;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .jump-link {
+            background-color: #8b5cf6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .jump-link:hover {
+            background-color: #7c3aed;
+        }
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        .custom-checkbox input {
+            margin-right: 0.5rem;
+            width: 18px;
+            height: 18px;
+            accent-color: #8b5cf6;
+        }
+    </style>
+</head>
+<body>
+    <!-- 公告页面 -->
+    <div id="noticePage" class="container">
+        <div class="flex justify-between items-center mb-4">
+            <div class="announcement-tag">公告通知</div>
+            <div class="text-gray-500">2025年12月5日 16:00</div>
+        </div>
+        <div class="notice-card">
+            <p>现我校有意开设学生开课及选课，特此发送通知和奖励机制，如果有上课和开课的意愿，请点击下面两个通知查看内容。</p>
+        </div>
+        
+        <div class="notice-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-lg">学生开课通知已发布</h3>
+                <button onclick="showCourseNotice()" class="jump-link">点击下方链接跳转</button>
+            </div>
+            <p class="text-sm text-gray-600">关于我校决定开设学生开课及学生选课相关的院选课事宜，现发布以下通知，请仔细阅读每条条款。</p>
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                <span>福州大学至诚学院 · 2025.12.05</span>
+                <span>浏览量 3313</span>
+            </div>
+        </div>
+        
+        <div class="notice-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold text-lg">奖励机制通知已发布</h3>
+                <button onclick="showRewardNotice()" class="jump-link">点击下方链接跳转</button>
+            </div>
+            <p class="text-sm text-gray-600">关于我校决定开设学生院选课事宜，有关选课的学分和奖励机制，现发布以下通知，请仔细阅读每条条款。</p>
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                <span>福州大学至诚学院 · 2025.12.05</span>
+                <span>浏览量 12350</span>
+            </div>
+        </div>
+        
+        <button onclick="goToSelectPage()" class="btn btn-primary mt-4">收到</button>
+    </div>
+
+    <!-- 学生开课通知详情 -->
+    <div id="courseNoticePage" class="container hidden">
+        <button onclick="backToNotice()" class="text-purple-600 mb-2">&larr; 返回</button>
+        <h2 class="text-xl font-bold mb-2">关于我校决定开设学生开课及学生选课</h2>
+        <div class="flex justify-between text-sm text-gray-500 mb-4">
+            <span>福州大学至诚学院</span>
+            <span>2025.12.05 3313</span>
+        </div>
+        <p class="mb-4">全体在校学生：</p>
+        <p class="mb-4">为构建"师生共治、学创融合"的新型教学模式，学校决定自2023年秋季学期起，全面开放学生自主开课及选课通道。现将有关事项通知如下：</p>
+        
+        <h3 class="font-bold mt-4 mb-2">一、学生开课实施办法</h3>
+        <h4 class="font-semibold mb-1">1.申请条件</h4>
+        <ul class="list-disc pl-5 mb-3">
+            <li>主讲人须为高年级本科生或研究生</li>
+            <li>组建3人以上教学团队（含助教）</li>
+            <li>提交完整课程设计方案（含教学目标、内容框架、考核方式）</li>
+        </ul>
+        
+        <h4 class="font-semibold mb-1">2.支持措施</h4>
+        <ul class="list-disc pl-5 mb-3">
+            <li>提供每门课程最高5000元经费支持</li>
+            <li>配备专业导师全程指导</li>
+            <li>开放多媒体教室、在线教学平台等资源</li>
+        </ul>
+        
+        <h4 class="font-semibold mb-1">3.审核流程</h4>
+        <p class="mb-4">学院初审→教务处复审→学术委员会终审→公示立项</p>
+        
+        <h3 class="font-bold mt-4 mb-2">二、学生选课操作指南</h3>
+        <h4 class="font-semibold mb-1">1.选课时间</h4>
+        <p class="mb-2">每学期第2-3周</p>
+        
+        <h4 class="font-semibold mb-1">2.选课方式</h4>
+        <ul class="list-disc pl-5 mb-3">
+            <li>登录教务系统"学生开课专区"浏览课程目录</li>
+            <li>每生每学期最多可选2门学生开设课程</li>
+            <li>采用"志愿优先+抽签"规则确定选课结果</li>
+        </ul>
+        
+        <h4 class="font-semibold mb-1">3.课程要求</h4>
+        <ul class="list-disc pl-5 mb-3">
+            <li>须完成16学时教学及考核</li>
+            <li>考核形式包括但不限于论文、设计、实践报告等</li>
+        </ul>
+        
+        <h3 class="font-bold mt-4 mb-2">三、特色亮点</h3>
+        <h4 class="font-semibold mb-1">1.双轨认证</h4>
+        <p class="mb-2">开设课程可同时申请"创新创业学分"及"社会实践学分"</p>
+        
+        <h4 class="font-semibold mb-1">2.成果转化</h4>
+        <p class="mb-2">优秀课程将收录至学校精品课程资源库，并推荐参加省级教学竞赛</p>
+        
+        <h4 class="font-semibold mb-1">3.荣誉体系</h4>
+        <p class="mb-4">设立"金课讲师""学创之星"等荣誉称号，颁发校长特别奖</p>
+        
+        <p class="mb-4">请各学院做好宣传动员工作，鼓励学生在教学相长中实现全面发展。</p>
+        <p class="mb-4">具体操作手册详见附件，咨询电话：123-123456。</p>
+        <p class="text-sm text-gray-500">福州大学至诚学院教务处<br>2025年12月05日</p>
+    </div>
+
+    <!-- 奖励机制通知详情 -->
+    <div id="rewardNoticePage" class="container hidden">
+        <button onclick="backToNotice()" class="text-purple-600 mb-2">&larr; 返回</button>
+        <h2 class="text-xl font-bold mb-2">关于有关选课的学分和奖励机制通知</h2>
+        <div class="flex justify-between text-sm text-gray-500 mb-4">
+            <span>福州大学至诚学院</span>
+            <span>2025.12.05 12350</span>
+        </div>
+        <p class="mb-4">全体在校学生：</p>
+        <p class="mb-4">为进一步深化教育教学改革，充分发挥学生主体作用，激发学习内驱力，学校现就学生自主选课学分认定及奖励机制相关事宜通知如下：</p>
+        
+        <h3 class="font-bold mt-4 mb-2">一、学分认定规则</h3>
+        <h4 class="font-semibold mb-1">1.课程范围</h4>
+        <p class="mb-2">学生通过指定平台自主开设或选修的课程，经教务处审核通过后，可纳入学分认定范围。</p>
+        
+        <h4 class="font-semibold mb-1">2.学分标准</h4>
+        <p class="mb-2">学分认定以课程学时和考核结果为依据，经教务处审核后确定。</p>
+        <ul class="list-disc pl-5 mb-3">
+            <li>开设课程：主讲人可获得2-4学分/门（根据课程质量评审结果确定）</li>
+            <li>选修课程：完成学习并通过考核者可获得1-2学分/门</li>
+        </ul>
+        
+        <h3 class="font-bold mt-4 mb-2">二、奖励机制</h3>
+        <h4 class="font-semibold mb-1">1.学分奖励</h4>
+        <p class="mb-2">获得的学分将记入学生学业档案，可用于评优评奖、推优等。</p>
+        
+        <h4 class="font-semibold mb-1">2.现金奖励</h4>
+        <ul class="list-disc pl-5 mb-3">
+            <li>优秀开课奖：每学期评选"十佳学生课程"，主讲团队可获3000元/门奖金及荣誉证书</li>
+            <li>创新课程奖：对跨学科、实践性强的特色课程，额外给予2000元/门研发基金</li>
+            <li>学习标兵奖：选修课程成绩优异者（前5%），可获500元/门奖学金</li>
+        </ul>
+        
+        <h4 class="font-semibold mb-1">3.资源支持</h4>
+        <p class="mb-2">优秀开课学生将优先获得学校资源支持和导师指导机会。</p>
+        
+        <h3 class="font-bold mt-4 mb-2">三、实施流程</h3>
+        <h4 class="font-semibold mb-1">1.开课申请</h4>
+        <p class="mb-2">学生通过教务系统提交开课申请材料。</p>
+        
+        <h4 class="font-semibold mb-1">2.选课阶段</h4>
+        <p class="mb-2">审核通过的课程将纳入选课系统，供学生选择。</p>
+        
+        <h4 class="font-semibold mb-1">3.考核评定</h4>
+        <p class="mb-4">课程结束后，由教务处组织成果验收和学生评价。</p>
+        
+        <p class="mb-4">请全体学生积极参与，充分发挥专业特长，共同打造多元化的学术生态。</p>
+        <p class="text-sm text-gray-500">福州大学至诚学院教务处<br>2025年12月05日</p>
+    </div>
+
+    <!-- 选择页面 -->
+    <div id="selectPage" class="container hidden">
+        <h2 class="text-xl font-bold mb-8 text-center">学生开课活动征集表</h2>
+        <button onclick="goToTeacherForm()" class="choice-btn teacher-btn">
+            👨‍🏫 我想当老师开课
+        </button>
+        <button onclick="goToStudentForm()" class="choice-btn student-btn">
+            👨‍🎓 我想当学生
+        </button>
+    </div>
+
+    <!-- 开课意愿表单（删除姓名、学号、联系方式） -->
+    <div id="teacherFormPage" class="container hidden">
+        <button onclick="backToSelect()" class="text-purple-600 mb-2">&larr; 返回</button>
+        <h2 class="text-xl font-bold mb-4">学生开课意愿征集表</h2>
+        <form id="teacherForm">
+            <div class="form-group">
+                <label class="form-label">1、你计划开设的课程主题/领域：</label>
+                <p class="text-xs text-gray-500 mb-1">（请明确具体方向，避免模糊表述）</p>
+                <input type="text" class="form-input" name="courseTheme" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">2、你预计的课程总学时数（单节课按45分钟计）：</label>
+                <input type="number" class="form-input" name="courseHours" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">3、你计划采用的教学形式：</label>
+                <p class="text-xs text-gray-500 mb-1">（可多选，需与课程主题匹配）</p>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="teach1" name="teachType" value="讲座式">
+                    <label for="teach1">讲座式（以知识讲解、案例分享为主）</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="teach2" name="teachType" value="工作坊式">
+                    <label for="teach2">工作坊式（以实操演练、动手实践为主）</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="teach3" name="teachType" value="案例分析式">
+                    <label for="teach3">案例分析式（以真实案例拆解、解决方案探讨为主）</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="teach4" name="teachType" value="演示教学式">
+                    <label for="teach4">演示教学式（以技能演示、步骤拆解为主）</label>
+                </div>
+                <div class="custom-checkbox mt-2">
+                    <input type="checkbox" id="teach5" name="teachType" value="其他">
+                    <label for="teach5">其他（请注明）：</label>
+                    <input type="text" class="form-input mt-1" name="teachTypeOther">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">4、你对课程的考核方式设想：</label>
+                <select class="form-select" name="assessmentMethod" required>
+                    <option>无硬性考核，侧重参与体验</option>
+                    <option>实践成果提交</option>
+                    <option>轻量化测试/问答</option>
+                    <option>课堂表现+小任务</option>
+                    <option>自定义考核</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">5、你在开设课程过程中，需要学校提供的具体支持：</label>
+                <p class="text-xs text-gray-500 mb-1">（分点说明更佳）</p>
+                <textarea class="form-input" rows="3" name="supportNeeded" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">6、授课能力自评及证明材料：</label>
+                <textarea class="form-input" rows="2" name="teachingAbility" required></textarea>
+                
+                <!-- 文件上传组件 -->
+                <div class="mt-2">
+                    <div class="file-upload">
+                        <div class="upload-btn">上传图片/文件</div>
+                        <input type="file" id="fileUpload" multiple accept="image/*,.pdf,.doc,.docx,.txt">
+                    </div>
+                    
+                    <!-- 文件列表展示区域 -->
+                    <div id="fileList" class="file-list hidden">
+                        <!-- 上传的文件会动态显示在这里 -->
+                    </div>
+                    
+                    <!-- 图片预览区域 -->
+                    <div id="previewContainer" class="upload-preview hidden">
+                        <!-- 图片预览会动态显示在这里 -->
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-4" id="teacherSubmitBtn">
+                <span>提交</span>
+                <span class="loading-text"><span class="loading"></span>提交中...</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- 上课意愿表单（删除姓名、学号、联系方式） -->
+    <div id="studentFormPage" class="container hidden">
+        <button onclick="backToSelect()" class="text-purple-600 mb-2">&larr; 返回</button>
+        <h2 class="text-xl font-bold mb-4">学生上课意愿征集表</h2>
+        <form id="studentForm">
+            <div class="form-group">
+                <label class="form-label">1、你感兴趣的选修课领域标签有哪些？</label>
+                <p class="text-xs text-gray-500 mb-1">（可从下述勾选，也可在"其他"处补充）</p>
+                <div class="mb-2">
+                    <span class="tag tag-default" onclick="toggleTag(this, '专业技能')">专业技能</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '音乐舞蹈')">音乐舞蹈</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '健康管理')">健康管理</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '自然科学')">自然科学</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '学习语言')">学习语言</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '休闲娱乐')">休闲娱乐</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '艺术创作')">艺术创作</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '跨界融合')">跨界融合</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '生活治理')">生活治理</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '人文社科')">人文社科</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '文化体验')">文化体验</span>
+                    <span class="tag tag-default" onclick="toggleTag(this, '户外实践')">户外实践</span>
+                    
+                    <div class="mt-3">
+                        <span class="tag tag-default" onclick="toggleOtherTag()">其他：</span>
+                        <input type="text" class="form-input" id="domainOther" name="domainOther" placeholder="请输入其他领域" disabled>
+                    </div>
+                    <!-- 隐藏的输入框用于存储选中的领域 -->
+                    <input type="hidden" id="selectedDomains" name="domains" value="">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">2、你偏好的课程形式是（可多选）？</label>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="form1" name="courseForm" value="线下集中授课">
+                    <label for="form1">线下集中授课</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="form2" name="courseForm" value="线上直播">
+                    <label for="form2">线上直播</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="form3" name="courseForm" value="线上录播">
+                    <label for="form3">线上录播</label>
+                </div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="form4" name="courseForm" value="线上+线下结合">
+                    <label for="form4">线上+线下结合</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">3、若课程有布置任务，你希望任务形式更偏向哪种？</label>
+                <select class="form-select" name="taskType" required>
+                    <option>轻量化任务</option>
+                    <option>实践类任务</option>
+                    <option>不希望有任务</option>
+                    <option>思考类任务</option>
+                    <option>自定义考核</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">4、你期望为单门选修课投入的时间约为多少？</label>
+                <p class="text-xs text-gray-500 mb-1">（每次上课、课后练习）</p>
+                <input type="text" class="form-input" name="timeInvestment" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">5、你希望通过选修课达成的短期/长期效果有哪些？</label>
+                <p class="text-xs text-gray-500 mb-1">（可补充具体期望）</p>
+                <textarea class="form-input" rows="2" name="expectedEffects" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">6、你对选修课还有哪些其他需求？</label>
+                <p class="text-xs text-gray-500 mb-1">（如课程形式、考核方式、师资要求等）</p>
+                <textarea class="form-input" rows="2" name="otherRequirements" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-4" id="studentSubmitBtn">
+                <span>提交</span>
+                <span class="loading-text"><span class="loading"></span>提交中...</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- 选课领域排行页面 -->
+    <div id="rankPage" class="container hidden">
+        <button onclick="backToStudentForm()" class="text-purple-600 mb-2">&larr; 返回</button>
+        <h2 class="text-xl font-bold mb-4">选修课领域排行</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>领域</th>
+                    <th>票数</th>
+                </tr>
+            </thead>
+            <tbody id="rankList">
+                <tr>
+                    <td class="rank-1">1</td>
+                    <td>专业技能</td>
+                    <td>50</td>
+                </tr>
+                <tr>
+                    <td class="rank-2">2</td>
+                    <td>音乐舞蹈</td>
+                    <td>40</td>
+                </tr>
+                <tr>
+                    <td class="rank-3">3</td>
+                    <td>健康管理</td>
+                    <td>30</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>自然科学</td>
+                    <td>28</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>学习语言</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>休闲娱乐</td>
+                    <td>24</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>艺术创作</td>
+                    <td>21</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>跨界融合</td>
+                    <td>18</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>生活治理</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>人文社科</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>文化体验</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>户外实践</td>
+                    <td>8</td>
+                </tr>
+            </tbody>
+        </table>
+        <button onclick="backToNotice()" class="btn btn-primary mt-4">确认</button>
+    </div>
+
+    <!-- 提交成功弹窗 -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold mb-4">提交成功！</h3>
+            <p class="mb-4">你的信息已成功保存，感谢你的参与！</p>
+            <button onclick="closeModal()" class="btn btn-primary">确认</button>
+        </div>
+    </div>
+
+    <!-- 提交失败弹窗 -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold mb-4 text-red-500">提交失败！</h3>
+            <p class="mb-4" id="errorMessage">请检查表单是否填写完整</p>
+            <button onclick="closeErrorModal()" class="btn btn-accent">确认</button>
+        </div>
+    </div>
+
+    <script>
+        // 存储选中的领域
+        let selectedDomains = [];
+        
+        // 初始化领域票数数据
+        let domainVotes = {
+            "专业技能": 50,
+            "音乐舞蹈": 40,
+            "健康管理": 30,
+            "自然科学": 28,
+            "学习语言": 25,
+            "休闲娱乐": 24,
+            "艺术创作": 21,
+            "跨界融合": 18,
+            "生活治理": 15,
+            "人文社科": 12,
+            "文化体验": 11,
+            "户外实践": 8
+        };
+
+        // 页面切换函数（核心跳转逻辑）
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // 公告页面跳转
+        function showCourseNotice() {
+            showPage('courseNoticePage');
+        }
+        function showRewardNotice() {
+            showPage('rewardNoticePage');
+        }
+        function backToNotice() {
+            showPage('noticePage');
+        }
+        function goToSelectPage() {
+            showPage('selectPage');
+        }
+
+        // 选择页面跳转
+        function goToTeacherForm() {
+            showPage('teacherFormPage');
+        }
+        function goToStudentForm() {
+            showPage('studentFormPage');
+        }
+        function backToSelect() {
+            showPage('selectPage');
+        }
+        function backToStudentForm() {
+            showPage('studentFormPage');
+        }
+
+        // 弹窗控制
+        function showModal() {
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            // 老师表单提交后返回选择页，学生表单提交后显示排行页
+            if (!document.getElementById('teacherFormPage').classList.contains('hidden')) {
+                showPage('selectPage');
+            } else if (!document.getElementById('studentFormPage').classList.contains('hidden')) {
+                updateRankList();
+                showPage('rankPage');
+            }
+            resetSubmitButtons();
+        }
+
+        // 错误弹窗控制
+        function showErrorModal(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').classList.remove('hidden');
+        }
+        function closeErrorModal() {
+            document.getElementById('errorModal').classList.add('hidden');
+            resetSubmitButtons();
+        }
+
+        // 重置提交按钮状态
+        function resetSubmitButtons() {
+            document.getElementById('teacherSubmitBtn').querySelector('span').style.display = 'inline';
+            document.getElementById('teacherSubmitBtn').querySelector('.loading-text').style.display = 'none';
+            document.getElementById('studentSubmitBtn').querySelector('span').style.display = 'inline';
+            document.getElementById('studentSubmitBtn').querySelector('.loading-text').style.display = 'none';
+        }
+
+        // 更新排行列表
+        function updateRankList() {
+            let sortedDomains = Object.entries(domainVotes)
+                .sort((a, b) => b[1] - a[1])
+                .map((item, index) => ({
+                    rank: index + 1,
+                    name: item[0],
+                    votes: item[1]
+                }));
+
+            let rankList = document.getElementById('rankList');
+            rankList.innerHTML = '';
+            sortedDomains.forEach(item => {
+                let row = document.createElement('tr');
+                let rankClass = item.rank === 1 ? 'rank-1' : item.rank === 2 ? 'rank-2' : item.rank === 3 ? 'rank-3' : '';
+                
+                row.innerHTML = `
+                    <td class="${rankClass}">${item.rank}</td>
+                    <td>${item.name}</td>
+                    <td>${item.votes}</td>
+                `;
+                rankList.appendChild(row);
+            });
+        }
+
+        // 标签选择功能
+        function toggleTag(element, domain) {
+            element.classList.toggle('tag-selected');
+            element.classList.toggle('tag-default');
+            
+            const index = selectedDomains.indexOf(domain);
+            if (index === -1) {
+                selectedDomains.push(domain);
+                domainVotes[domain]++;
+            } else {
+                selectedDomains.splice(index, 1);
+                domainVotes[domain]--;
+            }
+            document.getElementById('selectedDomains').value = JSON.stringify(selectedDomains);
+        }
+        function toggleOtherTag() {
+            const otherInput = document.getElementById('domainOther');
+            if (otherInput.disabled) {
+                otherInput.disabled = false;
+                otherInput.focus();
+                if (!selectedDomains.includes('其他')) {
+                    selectedDomains.push('其他');
+                    document.getElementById('selectedDomains').value = JSON.stringify(selectedDomains);
+                }
+            } else {
+                otherInput.disabled = true;
+                const index = selectedDomains.indexOf('其他');
+                if (index !== -1) {
+                    selectedDomains.splice(index, 1);
+                    document.getElementById('selectedDomains').value = JSON.stringify(selectedDomains);
+                }
+            }
+        }
+
+        // 文件上传预览功能
+        let uploadedFiles = [];
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (!files.length) return;
+            
+            const fileListEl = document.getElementById('fileList');
+            const previewContainer = document.getElementById('previewContainer');
+            fileListEl.classList.remove('hidden');
+            previewContainer.classList.remove('hidden');
+            fileListEl.innerHTML = '';
+            previewContainer.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                uploadedFiles.push(file);
+                
+                const formatFileSize = (bytes) => {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                };
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${formatFileSize(file.size)}</span>
+                    <span class="file-remove" data-index="${i}">删除</span>
+                `;
+                fileListEl.appendChild(fileItem);
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `<img src="${event.target.result}" alt="${file.name}">`;
+                        previewContainer.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                fileItem.querySelector('.file-remove').addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    uploadedFiles.splice(index, 1);
+                    renderFileList();
+                });
+            }
+        });
+        function renderFileList() {
+            const fileListEl = document.getElementById('fileList');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            if (!uploadedFiles.length) {
+                fileListEl.classList.add('hidden');
+                previewContainer.classList.add('hidden');
+                return;
+            }
+            
+            fileListEl.innerHTML = '';
+            previewContainer.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const formatFileSize = (bytes) => {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                };
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${formatFileSize(file.size)}</span>
+                    <span class="file-remove" data-index="${index}">删除</span>
+                `;
+                fileListEl.appendChild(fileItem);
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `<img src="${event.target.result}" alt="${file.name}">`;
+                        previewContainer.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                fileItem.querySelector('.file-remove').addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    uploadedFiles.splice(idx, 1);
+                    renderFileList();
+                });
+            });
+        }
+
+        // 表单提交验证（前端处理，无后台交互）
+        // 老师表单提交
+        document.getElementById('teacherForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('teacherSubmitBtn');
+            submitBtn.querySelector('span').style.display = 'none';
+            submitBtn.querySelector('.loading-text').style.display = 'flex';
+            
+            let isValid = true;
+            let errorMessage = '';
+            if (!this.courseTheme.value.trim()) {
+                isValid = false;
+                errorMessage = '请输入课程主题';
+            } else if (!this.courseHours.value) {
+                isValid = false;
+                errorMessage = '请输入课程学时数';
+            }
+            
+            setTimeout(() => {
+                isValid ? showModal() : showErrorModal(errorMessage);
+            }, 1000);
+        });
+
+        // 学生表单提交
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('studentSubmitBtn');
+            submitBtn.querySelector('span').style.display = 'none';
+            submitBtn.querySelector('.loading-text').style.display = 'flex';
+            
+            let isValid = true;
+            let errorMessage = '';
+            if (selectedDomains.length === 0) {
+                isValid = false;
+                errorMessage = '请至少选择一个感兴趣的领域';
+            } else if (!this.timeInvestment.value.trim()) {
+                isValid = false;
+                errorMessage = '请输入期望投入的时间';
+            }
+            
+            setTimeout(() => {
+                isValid ? showModal() : showErrorModal(errorMessage);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
